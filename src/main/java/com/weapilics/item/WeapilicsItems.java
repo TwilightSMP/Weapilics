@@ -4,6 +4,7 @@ import com.weapilics.WeapilicsMod;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
+import net.minecraft.item.MaceItem;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -20,6 +21,7 @@ public final class WeapilicsItems {
 		new RosefallItem(
 			new Item.Settings()
 				.registryKey(ROSEFALL_KEY)
+				.attributeModifiers(MaceItem.createAttributeModifiers())
 				.maxCount(1)
 				.maxDamage(500)
 				.rarity(Rarity.EPIC)
