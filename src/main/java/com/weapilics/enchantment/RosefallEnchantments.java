@@ -19,6 +19,7 @@ public final class RosefallEnchantments {
 	public static final int UNBREAKING_LEVEL = 3;
 	public static final int MENDING_LEVEL = 1;
 	public static final int FIRE_ASPECT_LEVEL = 2;
+	public static final int WIND_BURST_LEVEL = 1;
 
 	private static final Text ROSEFALL_DISPLAY_NAME = Text.literal("Rosefall").setStyle(Style.EMPTY.withItalic(false));
 	private static final RegistryWrapper.Impl<Enchantment> ENCHANTMENT_LOOKUP = BuiltinRegistries.createWrapperLookup().getOrThrow(RegistryKeys.ENCHANTMENT);
@@ -27,6 +28,7 @@ public final class RosefallEnchantments {
 	private static final RegistryEntry<Enchantment> UNBREAKING = ENCHANTMENT_LOOKUP.getOrThrow(Enchantments.UNBREAKING);
 	private static final RegistryEntry<Enchantment> MENDING = ENCHANTMENT_LOOKUP.getOrThrow(Enchantments.MENDING);
 	private static final RegistryEntry<Enchantment> FIRE_ASPECT = ENCHANTMENT_LOOKUP.getOrThrow(Enchantments.FIRE_ASPECT);
+	private static final RegistryEntry<Enchantment> WIND_BURST = ENCHANTMENT_LOOKUP.getOrThrow(Enchantments.WIND_BURST);
 
 	private RosefallEnchantments() {
 	}
@@ -47,6 +49,7 @@ public final class RosefallEnchantments {
 			builder.set(UNBREAKING, UNBREAKING_LEVEL);
 			builder.set(MENDING, MENDING_LEVEL);
 			builder.set(FIRE_ASPECT, FIRE_ASPECT_LEVEL);
+			builder.set(WIND_BURST, WIND_BURST_LEVEL);
 		});
 
 		stack.set(DataComponentTypes.CUSTOM_NAME, ROSEFALL_DISPLAY_NAME);
