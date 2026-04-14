@@ -50,10 +50,18 @@ jobs:
             exit 1
           fi
 
-          TAG="v${VERSION}"
-          TAG_EXISTS="false"
+          BASE_TAG="v${VERSION}"
+          TAG="${BASE_TAG}"
+
+          # If the base tag already exists, generate a unique fallback tag
+          # so each main push can still publish a release artifact.
+          if git ls-remote --exit-code --tags origin "refs/tags/${BASE_TAG}" >/dev/null 2>&1; then
+            TAG="${BASE_TAG}-run.${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
+          fi
+
           if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
-            TAG_EXISTS="true"
+            echo "Tag ${TAG} already exists, refusing to overwrite." >&2
+            exit 1
           fi
 
           JAR_PATH="$(find build/libs -maxdepth 1 -type f -name '*.jar' ! -name '*-sources.jar' ! -name '*-dev.jar' | head -n 1)"
@@ -64,12 +72,11 @@ jobs:
           fi
 
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "base_tag=${BASE_TAG}" >> "$GITHUB_OUTPUT"
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
-          echo "tag_exists=${TAG_EXISTS}" >> "$GITHUB_OUTPUT"
           echo "jar_path=${JAR_PATH}" >> "$GITHUB_OUTPUT"
 
       - name: create and push tag
-        if: steps.meta.outputs.tag_exists == 'false'
         shell: bash
         run: |
           set -euo pipefail
@@ -79,10 +86,11 @@ jobs:
           git push origin "${{ steps.meta.outputs.tag }}"
 
       - name: create github release
-        if: steps.meta.outputs.tag_exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.meta.outputs.tag }}
           name: Weapilics ${{ steps.meta.outputs.tag }}
           generate_release_notes: true
+          make_latest: true
+          overwrite_files: true
           files: ${{ steps.meta.outputs.jar_path }}
