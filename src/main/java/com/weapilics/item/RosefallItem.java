@@ -22,6 +22,6 @@ public class RosefallItem extends MaceItem {
 	@Override
 	public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, EquipmentSlot slot) {
 		super.inventoryTick(stack, world, entity, slot);
-		RosefallEnchantments.ensureRosefallEnchantments(stack);
+		RosefallEnchantments.ensureRosefallEnchantments(stack, world.getRegistryManager());
 	}
 }
