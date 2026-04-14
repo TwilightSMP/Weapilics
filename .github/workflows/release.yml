@@ -3,7 +3,7 @@ name: release
 on:
   push:
     branches:
-      - main
+      - '**'
   workflow_dispatch:
 
 permissions:
@@ -51,12 +51,23 @@ jobs:
           fi
 
           BASE_TAG="v${VERSION}"
+          BRANCH_NAME="${GITHUB_REF_NAME}"
+          SAFE_BRANCH_NAME="$(echo "${BRANCH_NAME}" | tr '[:upper:]' '[:lower:]' | tr '/ _' '---' | tr -cd 'a-z0-9.-')"
           TAG="${BASE_TAG}"
+          PRERELEASE="false"
+          MAKE_LATEST="true"
+
+          if [[ "${BRANCH_NAME}" != "main" ]]; then
+            TAG="${BASE_TAG}-${SAFE_BRANCH_NAME}.run.${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
+            PRERELEASE="true"
+            MAKE_LATEST="false"
+          fi
 
           # If the base tag already exists, generate a unique fallback tag
           # so each main push can still publish a release artifact.
-          if git ls-remote --exit-code --tags origin "refs/tags/${BASE_TAG}" >/dev/null 2>&1; then
+          if [[ "${BRANCH_NAME}" == "main" ]] && git ls-remote --exit-code --tags origin "refs/tags/${BASE_TAG}" >/dev/null 2>&1; then
             TAG="${BASE_TAG}-run.${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
+            MAKE_LATEST="false"
           fi
 
           if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
@@ -72,8 +83,11 @@ jobs:
           fi
 
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "branch_name=${BRANCH_NAME}" >> "$GITHUB_OUTPUT"
           echo "base_tag=${BASE_TAG}" >> "$GITHUB_OUTPUT"
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "prerelease=${PRERELEASE}" >> "$GITHUB_OUTPUT"
+          echo "make_latest=${MAKE_LATEST}" >> "$GITHUB_OUTPUT"
           echo "jar_path=${JAR_PATH}" >> "$GITHUB_OUTPUT"
 
       - name: create and push tag
@@ -91,6 +105,7 @@ jobs:
           tag_name: ${{ steps.meta.outputs.tag }}
           name: Weapilics ${{ steps.meta.outputs.tag }}
           generate_release_notes: true
-          make_latest: true
+          prerelease: ${{ steps.meta.outputs.prerelease }}
+          make_latest: ${{ steps.meta.outputs.make_latest }}
           overwrite_files: true
           files: ${{ steps.meta.outputs.jar_path }}
