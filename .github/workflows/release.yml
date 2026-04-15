@@ -54,14 +54,11 @@ jobs:
             exit 1
           fi
 
-          LATEST_TAG="$(git tag -l 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)"
+          # Consider only strict semantic tags (vX.Y.Z) and ignore run-suffixed tags.
+          LATEST_TAG="$(git tag --list --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)"
 
           if [[ -n "${LATEST_TAG}" ]]; then
             LATEST_TAG_VERSION="${LATEST_TAG#v}"
-            if [[ ! "${LATEST_TAG_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-              echo "Latest tag ${LATEST_TAG} is not semantic." >&2
-              exit 1
-            fi
             BASE_VERSION="$(printf '%s\n%s\n' "${CURRENT_VERSION}" "${LATEST_TAG_VERSION}" | sort -V | tail -n 1)"
           else
             BASE_VERSION="${CURRENT_VERSION}"
