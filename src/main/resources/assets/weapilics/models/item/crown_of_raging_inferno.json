@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "weapilics:item/crown_of_raging_inferno"
+  }
+}

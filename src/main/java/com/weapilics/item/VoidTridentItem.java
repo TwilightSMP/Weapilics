@@ -32,21 +32,15 @@ public class VoidTridentItem extends TridentItem {
 	public VoidTridentItem(Item.Settings settings) {
 		super(settings);
 	}
-
-	@Override
 	public ItemStack getDefaultStack() {
 		ItemStack stack = super.getDefaultStack();
 		applyVoidName(stack);
 		return stack;
 	}
-
-	@Override
 	public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, EquipmentSlot slot) {
 		super.inventoryTick(stack, world, entity, slot);
 		applyVoidName(stack);
 	}
-
-	@Override
 	public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
 		if (!(user instanceof PlayerEntity player)) {
 			return false;
