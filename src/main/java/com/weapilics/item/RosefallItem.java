@@ -18,21 +18,15 @@ public class RosefallItem extends MaceItem {
 	public RosefallItem(Settings settings) {
 		super(settings);
 	}
-
-	@Override
 	public ItemStack getDefaultStack() {
 		ItemStack stack = super.getDefaultStack();
 		RosefallEnchantments.ensureRosefallEnchantments(stack);
 		return stack;
 	}
-
-	@Override
 	public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, EquipmentSlot slot) {
 		super.inventoryTick(stack, world, entity, slot);
 		RosefallEnchantments.ensureRosefallEnchantments(stack, world.getRegistryManager());
 	}
-
-	@Override
 	public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 		super.postHit(stack, target, attacker);
 		attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, REGEN_DURATION_TICKS, REGEN_AMPLIFIER));
