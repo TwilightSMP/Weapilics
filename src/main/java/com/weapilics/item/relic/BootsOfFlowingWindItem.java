@@ -3,30 +3,27 @@ package com.weapilics.item.relic;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ArmorMaterials;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 
 
-public class BootsOfFlowingWindItem extends RelicItem {
+public class BootsOfFlowingWindItem extends RelicArmorItem {
 	public static final float SPRINT_SPEED_MULTIPLIER = 1.3f; 
 	public static final float AIR_CONTROL_MULTIPLIER = 1.4f; 
 	public static final int SLOW_FALLING_DURATION = 5; 
 
 	public BootsOfFlowingWindItem(Settings settings) {
-		super(settings);
+		super(ArmorMaterials.LEATHER, EquipmentSlot.FEET, settings);
 	}
 	public void onTick(ServerWorld world, PlayerEntity player, ItemStack stack, EquipmentSlot slot) {
-		
 		applySprintSpeedBonus(player);
 
-		
 		handleSlowFallingWhileSneaking(player);
 	}
 	public void onMove(ServerWorld world, PlayerEntity player, ItemStack stack) {
-		
 		if (!player.isOnGround()) {
 			applyAirControlBonus(player);
 		}
@@ -34,26 +31,25 @@ public class BootsOfFlowingWindItem extends RelicItem {
 
 	private void applySprintSpeedBonus(PlayerEntity player) {
 		if (player.isSprinting()) {
-			
-			double currentSpeed = player.getAttributeValue(EntityAttributes.MOVEMENT_SPEED);
-			if (currentSpeed > 0) {
-				player.setMovementSpeed((float) (currentSpeed * SPRINT_SPEED_MULTIPLIER));
-			}
+			player.addStatusEffect(new StatusEffectInstance(
+				StatusEffects.SPEED,
+				10,
+				0,
+				false,
+				false
+			));
 		}
 	}
 
 	private void applyAirControlBonus(PlayerEntity player) {
-		
-		
-		if (player.getVelocity().length() > 0) {
-			var velocity = player.getVelocity();
-			
-			player.setVelocity(
-				velocity.x * AIR_CONTROL_MULTIPLIER,
-				velocity.y, 
-				velocity.z * AIR_CONTROL_MULTIPLIER
-			);
-		}
+		// Give a small speed buff while airborne to improve horizontal control
+		player.addStatusEffect(new StatusEffectInstance(
+			StatusEffects.SPEED,
+			10,
+			0,
+			false,
+			false
+		));
 	}
 
 	private void handleSlowFallingWhileSneaking(PlayerEntity player) {

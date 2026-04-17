@@ -5,13 +5,14 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ArmorMaterials;
 import net.minecraft.server.world.ServerWorld;
 
-public class CapOfLaughingVoidItem extends RelicItem {
+public class CapOfLaughingVoidItem extends RelicArmorItem {
     public static final int INVISIBILITY_DURATION = 5; // Duration in ticks
 
     public CapOfLaughingVoidItem(Settings settings) {
-        super(settings);
+        super(ArmorMaterials.LEATHER, EquipmentSlot.HEAD, settings);
     }
 
     @Override

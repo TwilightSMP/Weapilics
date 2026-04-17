@@ -7,46 +7,41 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.ArmorMaterials;
 
 
-public class PendantOfSurgingTideItem extends RelicItem {
+public class PendantOfSurgingTideItem extends RelicArmorItem {
 	public static final float SWIM_SPEED_MULTIPLIER = 2.0f;
 	public static final int WATER_BREATHING_DURATION = 5; 
 
 	public PendantOfSurgingTideItem(Settings settings) {
-		super(settings);
+		super(ArmorMaterials.LEATHER, EquipmentSlot.CHEST, settings);
 	}
 	public void onTick(ServerWorld world, PlayerEntity player, ItemStack stack, EquipmentSlot slot) {
-		
 		player.addStatusEffect(new StatusEffectInstance(
 			StatusEffects.WATER_BREATHING,
 			WATER_BREATHING_DURATION,
 			0,
-			false, 
-			false  
+			false,
+			false
 		));
 
-		
+		// Apply a swim-speed effect while in water instead of changing raw movement speed
 		if (player.isTouchingWater()) {
-			applySwimSpeedBonus(player);
+			player.addStatusEffect(new StatusEffectInstance(
+				StatusEffects.SPEED,
+				10,
+				0,
+				false,
+				false
+			));
 		}
 	}
 	public void onMove(ServerWorld world, PlayerEntity player, ItemStack stack) {
-		
-		if (player.isSprinting() && player.isTouchingWater()) {
-			var velocity = player.getVelocity();
-			
-			if (velocity.y < 0) {
-				player.setVelocity(velocity.x, 0.05, velocity.z); 
-			}
-		}
+		// No direct velocity adjustments; effects applied in onTick handle swim behavior
 	}
 
 	private void applySwimSpeedBonus(PlayerEntity player) {
-		
-		double currentSpeed = player.getAttributeValue(EntityAttributes.MOVEMENT_SPEED);
-		if (currentSpeed > 0) {
-			player.setMovementSpeed((float) (currentSpeed * SWIM_SPEED_MULTIPLIER));
-		}
+		// Replaced by applying a Speed effect in onTick
 	}
 }

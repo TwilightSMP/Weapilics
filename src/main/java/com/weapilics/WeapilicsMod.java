@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 public final class WeapilicsMod implements ModInitializer {
 	public static final String MOD_ID = "weapilics";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static final boolean DEBUG = false;
 	public void onInitialize() {
 		WeapilicsItems.register();
 		RelicItems.register();
