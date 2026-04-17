@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ArmorMaterials;
+// ArmorMaterials removed — use RelicArmorItem constructor with EquipmentSlot
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -14,7 +14,7 @@ public class BootsOfFlowingWindItem extends RelicArmorItem {
 	public static final int SLOW_FALLING_DURATION = 5; 
 
 	public BootsOfFlowingWindItem(Settings settings) {
-		super(ArmorMaterials.LEATHER, EquipmentSlot.FEET, settings);
+		super(EquipmentSlot.FEET, settings);
 	}
 	public void onTick(ServerWorld world, PlayerEntity player, ItemStack stack, EquipmentSlot slot) {
 		applySprintSpeedBonus(player);

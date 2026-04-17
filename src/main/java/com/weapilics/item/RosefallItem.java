@@ -4,6 +4,7 @@ import com.weapilics.enchantment.RosefallEnchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.world.World;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -24,9 +25,10 @@ public class RosefallItem extends MaceItem {
 		RosefallEnchantments.ensureRosefallEnchantments(stack);
 		return stack;
 	}
-	public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, EquipmentSlot slot) {
-		super.inventoryTick(stack, world, entity, slot);
-		RosefallEnchantments.ensureRosefallEnchantments(stack, world.getRegistryManager());
+	public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+		super.inventoryTick(stack, world, entity, slot, selected);
+		if (!(world instanceof ServerWorld serverWorld)) return;
+		RosefallEnchantments.ensureRosefallEnchantments(stack, serverWorld.getRegistryManager());
 	}
 	public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 		super.postHit(stack, target, attacker);
