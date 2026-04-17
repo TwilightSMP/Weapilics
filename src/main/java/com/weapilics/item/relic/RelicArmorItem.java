@@ -13,6 +13,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public abstract class RelicArmorItem extends RelicItem {
     private final EquipmentSlot intendedSlot;
@@ -48,25 +49,38 @@ public abstract class RelicArmorItem extends RelicItem {
         try {
             double armorVal = protectionForSlot(intendedSlot);
             if (armorVal > 0) {
-                EntityAttribute attr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.armor"));
-                EntityAttributeInstance inst = player.getAttributeInstance(attr);
+                RegistryEntry<EntityAttribute> attrEntry = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.armor"));
+                EntityAttributeInstance inst = player.getAttributeInstance(attrEntry);
                 Identifier modId = idForSlot(intendedSlot);
+                EntityAttributeModifier.Operation op;
+                try {
+                    op = EntityAttributeModifier.Operation.valueOf("ADDITION");
+                } catch (Exception ex) {
+                    try {
+                        op = EntityAttributeModifier.Operation.valueOf("ADD");
+                    } catch (Exception ex2) {
+                        op = null;
+                    }
+                }
                 if (inst != null && inst.getModifier(modId) == null) {
-                    inst.addPersistentModifier(new EntityAttributeModifier(modId, armorVal, EntityAttributeModifier.Operation.ADDITION));
+                    if (op != null) inst.addPersistentModifier(new EntityAttributeModifier(modId, armorVal, op));
+                    else inst.addPersistentModifier(new EntityAttributeModifier(modId, armorVal, EntityAttributeModifier.Operation.valueOf("ADDITION")));
                 }
             }
 
             if (intendedSlot == EquipmentSlot.CHEST) {
-                EntityAttribute toughAttr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.armor_toughness"));
+                RegistryEntry<EntityAttribute> toughAttr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.armor_toughness"));
                 EntityAttributeInstance tough = player.getAttributeInstance(toughAttr);
                 if (tough != null && tough.getModifier(MOD_CHEST_TOUGH) == null) {
-                    tough.addPersistentModifier(new EntityAttributeModifier(MOD_CHEST_TOUGH, toughnessForChest(), EntityAttributeModifier.Operation.ADDITION));
+                    if (op != null) tough.addPersistentModifier(new EntityAttributeModifier(MOD_CHEST_TOUGH, toughnessForChest(), op));
+                    else tough.addPersistentModifier(new EntityAttributeModifier(MOD_CHEST_TOUGH, toughnessForChest(), EntityAttributeModifier.Operation.valueOf("ADDITION")));
                 }
 
-                EntityAttribute kbAttr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.knockback_resistance"));
+                RegistryEntry<EntityAttribute> kbAttr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.knockback_resistance"));
                 EntityAttributeInstance kb = player.getAttributeInstance(kbAttr);
                 if (kb != null && kb.getModifier(MOD_CHEST_KNOCK) == null) {
-                    kb.addPersistentModifier(new EntityAttributeModifier(MOD_CHEST_KNOCK, knockbackForChest(), EntityAttributeModifier.Operation.ADDITION));
+                    if (op != null) kb.addPersistentModifier(new EntityAttributeModifier(MOD_CHEST_KNOCK, knockbackForChest(), op));
+                    else kb.addPersistentModifier(new EntityAttributeModifier(MOD_CHEST_KNOCK, knockbackForChest(), EntityAttributeModifier.Operation.valueOf("ADDITION")));
                 }
             }
         } catch (Exception e) {
@@ -76,16 +90,16 @@ public abstract class RelicArmorItem extends RelicItem {
 
     public void onUnequip(ServerWorld world, PlayerEntity player, ItemStack stack) {
         try {
-            EntityAttribute attr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.armor"));
-            EntityAttributeInstance inst = player.getAttributeInstance(attr);
+            RegistryEntry<EntityAttribute> attrEntry = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.armor"));
+            EntityAttributeInstance inst = player.getAttributeInstance(attrEntry);
             if (inst != null) inst.removeModifier(idForSlot(intendedSlot));
 
             if (intendedSlot == EquipmentSlot.CHEST) {
-                EntityAttribute toughAttr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.armor_toughness"));
+                RegistryEntry<EntityAttribute> toughAttr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.armor_toughness"));
                 EntityAttributeInstance tough = player.getAttributeInstance(toughAttr);
                 if (tough != null) tough.removeModifier(MOD_CHEST_TOUGH);
 
-                EntityAttribute kbAttr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.knockback_resistance"));
+                RegistryEntry<EntityAttribute> kbAttr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.knockback_resistance"));
                 EntityAttributeInstance kb = player.getAttributeInstance(kbAttr);
                 if (kb != null) kb.removeModifier(MOD_CHEST_KNOCK);
             }
