@@ -5,7 +5,6 @@ import net.minecraft.world.PersistentState;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.Optional;
 
 public class CrownRageState extends PersistentState {
     private final Map<String, Integer> rage = new HashMap<>();
@@ -15,13 +14,14 @@ public class CrownRageState extends PersistentState {
 
     public static CrownRageState fromNbt(NbtCompound nbt) {
         CrownRageState s = new CrownRageState();
-        Optional<NbtCompound> maybeMap = nbt.getCompound("rage");
-        NbtCompound map = maybeMap.orElse(new NbtCompound());
+        NbtCompound map = nbt.contains("rage") ? nbt.getCompound("rage") : new NbtCompound();
         for (String key : map.getKeys()) {
-            s.rage.put(key, map.getInt(key).orElse(0));
+            s.rage.put(key, map.getInt(key));
         }
         return s;
     }
+
+    @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
         NbtCompound map = new NbtCompound();
         for (Map.Entry<String, Integer> e : rage.entrySet()) {
