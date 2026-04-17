@@ -6,23 +6,23 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.entity.damage.DamageSource;
-
-import java.util.UUID;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 
 public abstract class RelicArmorItem extends RelicItem {
     private final EquipmentSlot intendedSlot;
 
-    private static final UUID MOD_HEAD = UUID.fromString("a3c1d7b7-3f34-4a6b-a1d6-0e2f8c6e0001");
-    private static final UUID MOD_CHEST = UUID.fromString("a3c1d7b7-3f34-4a6b-a1d6-0e2f8c6e0002");
-    private static final UUID MOD_LEGS = UUID.fromString("a3c1d7b7-3f34-4a6b-a1d6-0e2f8c6e0003");
-    private static final UUID MOD_FEET = UUID.fromString("a3c1d7b7-3f34-4a6b-a1d6-0e2f8c6e0004");
-    private static final UUID MOD_CHEST_TOUGH = UUID.fromString("a3c1d7b7-3f34-4a6b-a1d6-0e2f8c6e0005");
-    private static final UUID MOD_CHEST_KNOCK = UUID.fromString("a3c1d7b7-3f34-4a6b-a1d6-0e2f8c6e0006");
+    private static final Identifier MOD_HEAD = Identifier.of(WeapilicsMod.MOD_ID, "relic_head");
+    private static final Identifier MOD_CHEST = Identifier.of(WeapilicsMod.MOD_ID, "relic_chest");
+    private static final Identifier MOD_LEGS = Identifier.of(WeapilicsMod.MOD_ID, "relic_legs");
+    private static final Identifier MOD_FEET = Identifier.of(WeapilicsMod.MOD_ID, "relic_feet");
+    private static final Identifier MOD_CHEST_TOUGH = Identifier.of(WeapilicsMod.MOD_ID, "relic_chest_toughness");
+    private static final Identifier MOD_CHEST_KNOCK = Identifier.of(WeapilicsMod.MOD_ID, "relic_chest_knockback");
 
     public RelicArmorItem(EquipmentSlot slot, Settings settings) {
         super(settings);
@@ -48,21 +48,25 @@ public abstract class RelicArmorItem extends RelicItem {
         try {
             double armorVal = protectionForSlot(intendedSlot);
             if (armorVal > 0) {
-                EntityAttributeInstance inst = player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR);
-                if (inst != null && inst.getModifier(uuidForSlot(intendedSlot)) == null) {
-                    inst.addPersistentModifier(new EntityAttributeModifier(uuidForSlot(intendedSlot), "weapilics:relic_armor_" + intendedSlot.name(), armorVal, EntityAttributeModifier.Operation.ADDITION));
+                EntityAttribute attr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.armor"));
+                EntityAttributeInstance inst = player.getAttributeInstance(attr);
+                Identifier modId = idForSlot(intendedSlot);
+                if (inst != null && inst.getModifier(modId) == null) {
+                    inst.addPersistentModifier(new EntityAttributeModifier(modId, armorVal, EntityAttributeModifier.Operation.ADDITION));
                 }
             }
 
             if (intendedSlot == EquipmentSlot.CHEST) {
-                EntityAttributeInstance tough = player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR_TOUGHNESS);
+                EntityAttribute toughAttr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.armor_toughness"));
+                EntityAttributeInstance tough = player.getAttributeInstance(toughAttr);
                 if (tough != null && tough.getModifier(MOD_CHEST_TOUGH) == null) {
-                    tough.addPersistentModifier(new EntityAttributeModifier(MOD_CHEST_TOUGH, "weapilics:relic_armor_toughness", toughnessForChest(), EntityAttributeModifier.Operation.ADDITION));
+                    tough.addPersistentModifier(new EntityAttributeModifier(MOD_CHEST_TOUGH, toughnessForChest(), EntityAttributeModifier.Operation.ADDITION));
                 }
 
-                EntityAttributeInstance kb = player.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
+                EntityAttribute kbAttr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.knockback_resistance"));
+                EntityAttributeInstance kb = player.getAttributeInstance(kbAttr);
                 if (kb != null && kb.getModifier(MOD_CHEST_KNOCK) == null) {
-                    kb.addPersistentModifier(new EntityAttributeModifier(MOD_CHEST_KNOCK, "weapilics:relic_knockback_resist", knockbackForChest(), EntityAttributeModifier.Operation.ADDITION));
+                    kb.addPersistentModifier(new EntityAttributeModifier(MOD_CHEST_KNOCK, knockbackForChest(), EntityAttributeModifier.Operation.ADDITION));
                 }
             }
         } catch (Exception e) {
@@ -72,14 +76,17 @@ public abstract class RelicArmorItem extends RelicItem {
 
     public void onUnequip(ServerWorld world, PlayerEntity player, ItemStack stack) {
         try {
-            EntityAttributeInstance inst = player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR);
-            if (inst != null) inst.removeModifier(uuidForSlot(intendedSlot));
+            EntityAttribute attr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.armor"));
+            EntityAttributeInstance inst = player.getAttributeInstance(attr);
+            if (inst != null) inst.removeModifier(idForSlot(intendedSlot));
 
             if (intendedSlot == EquipmentSlot.CHEST) {
-                EntityAttributeInstance tough = player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR_TOUGHNESS);
+                EntityAttribute toughAttr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.armor_toughness"));
+                EntityAttributeInstance tough = player.getAttributeInstance(toughAttr);
                 if (tough != null) tough.removeModifier(MOD_CHEST_TOUGH);
 
-                EntityAttributeInstance kb = player.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
+                EntityAttribute kbAttr = Registries.ATTRIBUTE.get(Identifier.of("minecraft", "generic.knockback_resistance"));
+                EntityAttributeInstance kb = player.getAttributeInstance(kbAttr);
                 if (kb != null) kb.removeModifier(MOD_CHEST_KNOCK);
             }
         } catch (Exception e) {
@@ -105,7 +112,7 @@ public abstract class RelicArmorItem extends RelicItem {
 
     // Ticking is driven centrally by RelicManager; do not rely on a custom inventoryTick signature here.
 
-    private static UUID uuidForSlot(EquipmentSlot slot) {
+    private static Identifier idForSlot(EquipmentSlot slot) {
         return switch (slot) {
             case HEAD -> MOD_HEAD;
             case CHEST -> MOD_CHEST;
