@@ -14,14 +14,12 @@ public class CrownRageState extends PersistentState {
 
     public static CrownRageState fromNbt(NbtCompound nbt) {
         CrownRageState s = new CrownRageState();
-        NbtCompound map = nbt.contains("rage") ? nbt.getCompound("rage") : new NbtCompound();
+        NbtCompound map = nbt.getCompound("rage").orElse(new NbtCompound());
         for (String key : map.getKeys()) {
-            s.rage.put(key, map.getInt(key));
+            s.rage.put(key, map.getInt(key).orElse(0));
         }
         return s;
     }
-
-    @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
         NbtCompound map = new NbtCompound();
         for (Map.Entry<String, Integer> e : rage.entrySet()) {
