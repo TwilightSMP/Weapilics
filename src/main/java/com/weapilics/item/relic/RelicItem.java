@@ -47,7 +47,7 @@ public abstract class RelicItem extends Item {
 	
 	public void onMove(ServerWorld world, PlayerEntity player, ItemStack stack) {
 	}
-	public void inventoryTick(ItemStack stack, net.minecraft.world.World world, net.minecraft.entity.Entity entity, int slot, boolean selected) {
-		super.inventoryTick(stack, world, entity, slot, selected);
+	public void inventoryTick(ItemStack stack, ServerWorld world, net.minecraft.entity.Entity entity, EquipmentSlot slot) {
+		super.inventoryTick(stack, world, entity, slot);
 	}
 }

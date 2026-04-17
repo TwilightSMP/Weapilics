@@ -37,9 +37,8 @@ public class VoidTridentItem extends TridentItem {
 		applyVoidName(stack);
 		return stack;
 	}
-	public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-		super.inventoryTick(stack, world, entity, slot, selected);
-		if (!(world instanceof ServerWorld serverWorld)) return;
+	public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, EquipmentSlot slot) {
+		super.inventoryTick(stack, world, entity, slot);
 		applyVoidName(stack);
 	}
 	public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
