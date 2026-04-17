@@ -19,8 +19,6 @@ public abstract class RelicArmorItem extends RelicItem {
     public EquipmentSlot getIntendedSlot() {
         return intendedSlot;
     }
-
-    @Override
     public EquipmentSlot getEquipmentSlot(ItemStack stack) {
         return intendedSlot;
     }
