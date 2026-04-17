@@ -19,6 +19,7 @@ public abstract class RelicArmorItem extends RelicItem {
     public EquipmentSlot getIntendedSlot() {
         return intendedSlot;
     }
+
     public EquipmentSlot getEquipmentSlot(ItemStack stack) {
         return intendedSlot;
     }
