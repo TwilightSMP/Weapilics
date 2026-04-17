@@ -1,6 +1,7 @@
 package com.weapilics.item.relic;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.Item.Settings;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;

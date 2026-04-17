@@ -2,6 +2,7 @@ package com.weapilics.item.relic;
 
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorMaterials;
+import net.minecraft.item.Item.Settings;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -86,8 +87,15 @@ public class CrownOfRagingInfernoItem extends RelicArmorItem {
 		if (cd > 0) return;
 
 		Vec3d look = player.getRotationVec(1.0F);
-		SmallFireballEntity fireball = new SmallFireballEntity(world, player, look.x, look.y, look.z);
-		fireball.setPos(player.getX() + look.x, player.getEyeY() + look.y, player.getZ() + look.z);
+		SmallFireballEntity fireball = new SmallFireballEntity(
+			world,
+			player.getX() + look.x,
+			player.getEyeY() + look.y,
+			player.getZ() + look.z,
+			look.x,
+			look.y,
+			look.z
+		);
 		world.spawnEntity(fireball);
 		FIREBALL_COOLDOWN.put(uuid, 100);
 		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F);
@@ -95,17 +103,17 @@ public class CrownOfRagingInfernoItem extends RelicArmorItem {
 	}
 
 	private int getRage(ServerWorld world, UUID uuid) {
-		CrownRageState state = world.getPersistentStateManager().getOrCreate(CrownRageState::fromNbt, CrownRageState::new, "weapilics_rage");
+		CrownRageState state = world.getPersistentStateManager().getOrCreate(CrownRageState::new, "weapilics_rage");
 		return Math.min(MAX_RAGE, Math.max(0, state.get(uuid)));
 	}
 
 	private void setRage(ServerWorld world, UUID uuid, int rage) {
-		CrownRageState state = world.getPersistentStateManager().getOrCreate(CrownRageState::fromNbt, CrownRageState::new, "weapilics_rage");
+		CrownRageState state = world.getPersistentStateManager().getOrCreate(CrownRageState::new, "weapilics_rage");
 		state.set(uuid, Math.max(0, Math.min(rage, MAX_RAGE)));
 	}
 
 	private void addRage(ServerWorld world, UUID uuid, int amount) {
-		CrownRageState state = world.getPersistentStateManager().getOrCreate(CrownRageState::fromNbt, CrownRageState::new, "weapilics_rage");
+		CrownRageState state = world.getPersistentStateManager().getOrCreate(CrownRageState::new, "weapilics_rage");
 		state.add(uuid, amount);
 		if (WeapilicsMod.DEBUG) WeapilicsMod.LOGGER.debug("Rage for {} now {}", uuid.toString(), state.get(uuid));
 	}
