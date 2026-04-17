@@ -19,6 +19,9 @@ public abstract class RelicArmorItem extends RelicItem {
     public EquipmentSlot getIntendedSlot() {
         return intendedSlot;
     }
+    public EquipmentSlot getEquipmentSlot(ItemStack stack) {
+        return intendedSlot;
+    }
 
     public void onTick(ServerWorld world, PlayerEntity player, ItemStack stack, EquipmentSlot slot) {
     }
