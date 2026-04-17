@@ -3,22 +3,25 @@ package com.weapilics.item.relic;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.entity.damage.DamageSource;
 
-public abstract class RelicArmorItem extends ArmorItem {
+public abstract class RelicArmorItem extends RelicItem {
     private final EquipmentSlot intendedSlot;
 
     public RelicArmorItem(EquipmentSlot slot, Settings settings) {
-        super(ArmorMaterials.LEATHER, slot, settings);
+        super(settings);
         this.intendedSlot = slot;
     }
 
     public EquipmentSlot getIntendedSlot() {
+        return intendedSlot;
+    }
+
+    @Override
+    public EquipmentSlot getEquipmentSlot(ItemStack stack) {
         return intendedSlot;
     }
 
