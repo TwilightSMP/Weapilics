@@ -11,6 +11,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.EnumMap;
 import com.weapilics.WeapilicsMod;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -21,6 +22,8 @@ public final class RelicManager {
 	}
 
 	private static final Map<UUID, Integer> PLAYER_FOOD_LEVEL = new ConcurrentHashMap<>();
+	// track last equipped stacks per player so we can call onEquip/onUnequip
+	private static final Map<UUID, EnumMap<EquipmentSlot, ItemStack>> LAST_EQUIPPED = new ConcurrentHashMap<>();
 
 	public static void register() {
 		ServerLivingEntityEvents.ALLOW_DAMAGE.register(RelicManager::onLivingEntityDamage);
@@ -31,6 +34,32 @@ public final class RelicManager {
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
 				if (!(player.getEntityWorld() instanceof ServerWorld world)) continue;
+				// detect equip/unequip transitions and call hooks
+				EnumMap<EquipmentSlot, ItemStack> prev = LAST_EQUIPPED.computeIfAbsent(player.getUuid(), k -> new EnumMap<>(EquipmentSlot.class));
+				for (EquipmentSlot slot : EquipmentSlot.values()) {
+					ItemStack current = player.getEquippedStack(slot);
+					ItemStack old = prev.get(slot);
+					if (old == null || old.getItem() != current.getItem()) {
+						// unequip old
+						if (old != null && old.getItem() instanceof RelicArmorItem relicArmorOld) {
+							try { relicArmorOld.onUnequip(world, player, old); } catch (Exception e) { WeapilicsMod.LOGGER.error("Error onUnequip for {}: {}", old, e.toString()); }
+						} else if (old != null && old.getItem() instanceof RelicItem relicOld) {
+							try { relicOld.onUnequip(world, player, old); } catch (Exception e) { WeapilicsMod.LOGGER.error("Error onUnequip for {}: {}", old, e.toString()); }
+						}
+
+						// equip new
+						if (current != null && current.getItem() instanceof RelicArmorItem relicArmorNew) {
+							try { relicArmorNew.onEquip(world, player, current); } catch (Exception e) { WeapilicsMod.LOGGER.error("Error onEquip for {}: {}", current, e.toString()); }
+						} else if (current != null && current.getItem() instanceof RelicItem relicNew) {
+							try { relicNew.onEquip(world, player, current); } catch (Exception e) { WeapilicsMod.LOGGER.error("Error onEquip for {}: {}", current, e.toString()); }
+						}
+
+						prev.put(slot, current.copy());
+					} else {
+						// keep stored copy updated
+						prev.put(slot, current.copy());
+					}
+				}
 					// detect food consumption (simple delta check)
 					int currentFood = player.getHungerManager().getFoodLevel();
 					int prevFood = PLAYER_FOOD_LEVEL.getOrDefault(player.getUuid(), currentFood);
@@ -86,6 +115,7 @@ public final class RelicManager {
 				online.add(p.getUuid());
 			}
 			PLAYER_FOOD_LEVEL.keySet().removeIf(u -> !online.contains(u));
+			LAST_EQUIPPED.keySet().removeIf(u -> !online.contains(u));
 		});
 	}
 
