@@ -1,7 +1,6 @@
 package com.weapilics.item.relic;
 
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -11,7 +10,6 @@ import net.minecraft.item.ArmorMaterials;
 
 
 public class PendantOfSurgingTideItem extends RelicArmorItem {
-	public static final float SWIM_SPEED_MULTIPLIER = 2.0f;
 	public static final int WATER_BREATHING_DURATION = 5; 
 
 	public PendantOfSurgingTideItem(Settings settings) {
@@ -41,7 +39,5 @@ public class PendantOfSurgingTideItem extends RelicArmorItem {
 		// No direct velocity adjustments; effects applied in onTick handle swim behavior
 	}
 
-	private void applySwimSpeedBonus(PlayerEntity player) {
-		// Replaced by applying a Speed effect in onTick
-	}
+	// swim speed handled with a Speed effect in onTick
 }

@@ -78,7 +78,14 @@ public final class RelicManager {
 								}
 							}
 					}
+            }
+
+			// Cleanup PLAYER_FOOD_LEVEL once per tick: remove entries for players no longer online
+			java.util.Set<UUID> online = new java.util.HashSet<>();
+			for (ServerPlayerEntity p : server.getPlayerManager().getPlayerList()) {
+				online.add(p.getUuid());
 			}
+			PLAYER_FOOD_LEVEL.keySet().removeIf(u -> !online.contains(u));
 		});
 	}
 

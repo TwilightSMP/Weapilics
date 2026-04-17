@@ -1,7 +1,6 @@
 package com.weapilics.item.relic;
 
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ArmorMaterials;
@@ -11,8 +10,6 @@ import net.minecraft.entity.effect.StatusEffects;
 
 
 public class BootsOfFlowingWindItem extends RelicArmorItem {
-	public static final float SPRINT_SPEED_MULTIPLIER = 1.3f; 
-	public static final float AIR_CONTROL_MULTIPLIER = 1.4f; 
 	public static final int SLOW_FALLING_DURATION = 5; 
 
 	public BootsOfFlowingWindItem(Settings settings) {
