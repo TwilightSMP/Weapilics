@@ -1,7 +1,8 @@
 package com.weapilics.item.relic;
 
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ArmorMaterials;
+// ArmorMaterials removed — use RelicArmorItem constructor with EquipmentSlot
+import net.minecraft.item.Item.Settings;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,8 +10,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import java.util.UUID;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import com.weapilics.WeapilicsMod;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.util.math.Vec3d;
@@ -26,11 +27,12 @@ public class CrownOfRagingInfernoItem extends RelicArmorItem {
 	public static final int FIRE_DAMAGE_COOLDOWN = 20; 
 
 	
-	private static final Map<UUID, Integer> FIRE_COOLDOWN = new HashMap<>();
-	private static final Map<UUID, Integer> FIREBALL_COOLDOWN = new HashMap<>();
+	private static final Map<UUID, Integer> FIRE_COOLDOWN = new ConcurrentHashMap<>();
+	private static final Map<UUID, Integer> FIREBALL_COOLDOWN = new ConcurrentHashMap<>();
+	private static final Map<UUID, Integer> RAGE = new ConcurrentHashMap<>();
 
 	public CrownOfRagingInfernoItem(Settings settings) {
-		super(ArmorMaterials.LEATHER, EquipmentSlot.HEAD, settings);
+		super(EquipmentSlot.HEAD, settings);
 	}
 	public void onTick(ServerWorld world, PlayerEntity player, ItemStack stack, EquipmentSlot slot) {
 		
@@ -86,8 +88,7 @@ public class CrownOfRagingInfernoItem extends RelicArmorItem {
 		if (cd > 0) return;
 
 		Vec3d look = player.getRotationVec(1.0F);
-		SmallFireballEntity fireball = new SmallFireballEntity(world, player, look.x, look.y, look.z);
-		fireball.setPos(player.getX() + look.x, player.getEyeY() + look.y, player.getZ() + look.z);
+		SmallFireballEntity fireball = new SmallFireballEntity(world, player.getX() + look.x, player.getEyeY() + look.y, player.getZ() + look.z, look);
 		world.spawnEntity(fireball);
 		FIREBALL_COOLDOWN.put(uuid, 100);
 		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F);
@@ -95,18 +96,15 @@ public class CrownOfRagingInfernoItem extends RelicArmorItem {
 	}
 
 	private int getRage(ServerWorld world, UUID uuid) {
-		CrownRageState state = world.getPersistentStateManager().getOrCreate(CrownRageState::fromNbt, CrownRageState::new, "weapilics_rage");
-		return Math.min(MAX_RAGE, Math.max(0, state.get(uuid)));
+		return Math.min(MAX_RAGE, Math.max(0, RAGE.getOrDefault(uuid, 0)));
 	}
 
 	private void setRage(ServerWorld world, UUID uuid, int rage) {
-		CrownRageState state = world.getPersistentStateManager().getOrCreate(CrownRageState::fromNbt, CrownRageState::new, "weapilics_rage");
-		state.set(uuid, Math.max(0, Math.min(rage, MAX_RAGE)));
+		RAGE.put(uuid, Math.max(0, Math.min(rage, MAX_RAGE)));
 	}
 
 	private void addRage(ServerWorld world, UUID uuid, int amount) {
-		CrownRageState state = world.getPersistentStateManager().getOrCreate(CrownRageState::fromNbt, CrownRageState::new, "weapilics_rage");
-		state.add(uuid, amount);
-		if (WeapilicsMod.DEBUG) WeapilicsMod.LOGGER.debug("Rage for {} now {}", uuid.toString(), state.get(uuid));
+		RAGE.merge(uuid, amount, Integer::sum);
+		if (WeapilicsMod.DEBUG) WeapilicsMod.LOGGER.debug("Rage for {} now {}", uuid.toString(), RAGE.getOrDefault(uuid, 0));
 	}
 }

@@ -2,7 +2,9 @@ package com.weapilics.item;
 
 import com.weapilics.enchantment.RosefallEnchantments;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.Item.Settings;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;

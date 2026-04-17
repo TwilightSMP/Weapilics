@@ -1,19 +1,20 @@
 package com.weapilics.item.relic;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.Item.Settings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.ArmorMaterials;
+// ArmorMaterials removed — use RelicArmorItem constructor with EquipmentSlot
 
 
 public class PendantOfSurgingTideItem extends RelicArmorItem {
 	public static final int WATER_BREATHING_DURATION = 5; 
 
 	public PendantOfSurgingTideItem(Settings settings) {
-		super(ArmorMaterials.LEATHER, EquipmentSlot.CHEST, settings);
+		super(EquipmentSlot.CHEST, settings);
 	}
 	public void onTick(ServerWorld world, PlayerEntity player, ItemStack stack, EquipmentSlot slot) {
 		player.addStatusEffect(new StatusEffectInstance(

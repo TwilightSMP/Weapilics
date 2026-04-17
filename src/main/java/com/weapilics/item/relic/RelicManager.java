@@ -37,46 +37,46 @@ public final class RelicManager {
 					if (currentFood > prevFood) {
 						for (EquipmentSlot slot : EquipmentSlot.values()) {
 							ItemStack stack = player.getEquippedStack(slot);
-								if (stack.getItem() instanceof RelicItem relic) {
-									if (WeapilicsMod.DEBUG) WeapilicsMod.LOGGER.debug("Player {} ate - triggering onEat for {}", player.getName().getString(), stack.getItem().toString());
-									try {
-										relic.onEat(world, player, stack);
-									} catch (Exception e) {
-										WeapilicsMod.LOGGER.error("Error onEat for {}: {}", stack, e.toString());
+									if (stack.getItem() instanceof RelicArmorItem relicArmor) {
+										if (WeapilicsMod.DEBUG) WeapilicsMod.LOGGER.debug("Player {} ate - triggering onEat for {}", player.getName().getString(), stack.getItem().toString());
+										try {
+											relicArmor.onEat(world, player, stack);
+										} catch (Exception e) {
+											WeapilicsMod.LOGGER.error("Error onEat for {}: {}", stack, e.toString());
+										}
+									} else if (stack.getItem() instanceof RelicItem relic) {
+										if (WeapilicsMod.DEBUG) WeapilicsMod.LOGGER.debug("Player {} ate - triggering onEat for {}", player.getName().getString(), stack.getItem().toString());
+										try {
+											relic.onEat(world, player, stack);
+										} catch (Exception e) {
+											WeapilicsMod.LOGGER.error("Error onEat for {}: {}", stack, e.toString());
+										}
 									}
-								} else if (stack.getItem() instanceof RelicArmorItem relicArmor) {
-									if (WeapilicsMod.DEBUG) WeapilicsMod.LOGGER.debug("Player {} ate - triggering onEat for {}", player.getName().getString(), stack.getItem().toString());
-									try {
-										relicArmor.onEat(world, player, stack);
-									} catch (Exception e) {
-										WeapilicsMod.LOGGER.error("Error onEat for {}: {}", stack, e.toString());
-									}
-								}
 						}
 					}
 					PLAYER_FOOD_LEVEL.put(player.getUuid(), currentFood);
 
 					for (EquipmentSlot slot : EquipmentSlot.values()) {
 						ItemStack stack = player.getEquippedStack(slot);
-							if (stack.getItem() instanceof RelicItem relic) {
-								if (WeapilicsMod.DEBUG) WeapilicsMod.LOGGER.debug("Relic detected on player {}: {}", player.getName().getString(), stack.getItem().toString());
-								try {
-									relic.onTick(world, player, stack, slot);
-									relic.onMove(world, player, stack);
-									relic.onSneak(world, player, stack, player.isSneaking());
-								} catch (Exception e) {
-									WeapilicsMod.LOGGER.error("Error ticking relic {} for {}: {}", stack, player.getName().getString(), e.toString());
+								if (stack.getItem() instanceof RelicArmorItem relicArmor) {
+									if (WeapilicsMod.DEBUG) WeapilicsMod.LOGGER.debug("Relic armor detected on player {}: {}", player.getName().getString(), stack.getItem().toString());
+									try {
+										relicArmor.onTick(world, player, stack, slot);
+										relicArmor.onMove(world, player, stack);
+										relicArmor.onSneak(world, player, stack, player.isSneaking());
+									} catch (Exception e) {
+										WeapilicsMod.LOGGER.error("Error ticking relic armor {} for {}: {}", stack, player.getName().getString(), e.toString());
+									}
+								} else if (stack.getItem() instanceof RelicItem relic) {
+									if (WeapilicsMod.DEBUG) WeapilicsMod.LOGGER.debug("Relic detected on player {}: {}", player.getName().getString(), stack.getItem().toString());
+									try {
+										relic.onTick(world, player, stack, slot);
+										relic.onMove(world, player, stack);
+										relic.onSneak(world, player, stack, player.isSneaking());
+									} catch (Exception e) {
+										WeapilicsMod.LOGGER.error("Error ticking relic {} for {}: {}", stack, player.getName().getString(), e.toString());
+									}
 								}
-							} else if (stack.getItem() instanceof RelicArmorItem relicArmor) {
-								if (WeapilicsMod.DEBUG) WeapilicsMod.LOGGER.debug("Relic armor detected on player {}: {}", player.getName().getString(), stack.getItem().toString());
-								try {
-									relicArmor.onTick(world, player, stack, slot);
-									relicArmor.onMove(world, player, stack);
-									relicArmor.onSneak(world, player, stack, player.isSneaking());
-								} catch (Exception e) {
-									WeapilicsMod.LOGGER.error("Error ticking relic armor {} for {}: {}", stack, player.getName().getString(), e.toString());
-								}
-							}
 					}
             }
 
@@ -102,12 +102,12 @@ public final class RelicManager {
 		
 		for (EquipmentSlot slot : EquipmentSlot.values()) {
 			ItemStack stack = player.getEquippedStack(slot);
-			if (stack.getItem() instanceof RelicItem relic) {
-				if (relic.onDamageTaken(world, player, stack, source, amount)) {
+			if (stack.getItem() instanceof RelicArmorItem relicArmor) {
+				if (relicArmor.onDamageTaken(world, player, stack, source, amount)) {
 					return false;
 				}
-			} else if (stack.getItem() instanceof RelicArmorItem relicArmor) {
-				if (relicArmor.onDamageTaken(world, player, stack, source, amount)) {
+			} else if (stack.getItem() instanceof RelicItem relic) {
+				if (relic.onDamageTaken(world, player, stack, source, amount)) {
 					return false;
 				}
 			}
@@ -124,14 +124,14 @@ public final class RelicManager {
 		ServerWorld serverWorld = (ServerWorld) world;
 
 		
-		for (EquipmentSlot slot : EquipmentSlot.values()) {
-			ItemStack stack = serverPlayer.getEquippedStack(slot);
-			if (stack.getItem() instanceof RelicItem relic) {
-				relic.onAttackDealt(serverWorld, serverPlayer, stack, livingTarget, 0);
-			} else if (stack.getItem() instanceof RelicArmorItem relicArmor) {
-				relicArmor.onAttackDealt(serverWorld, serverPlayer, stack, livingTarget, 0);
+			for (EquipmentSlot slot : EquipmentSlot.values()) {
+				ItemStack stack = serverPlayer.getEquippedStack(slot);
+				if (stack.getItem() instanceof RelicArmorItem relicArmor) {
+					relicArmor.onAttackDealt(serverWorld, serverPlayer, stack, livingTarget, 0);
+				} else if (stack.getItem() instanceof RelicItem relic) {
+					relic.onAttackDealt(serverWorld, serverPlayer, stack, livingTarget, 0);
+				}
 			}
-		}
 
 		return ActionResult.PASS;
 	}

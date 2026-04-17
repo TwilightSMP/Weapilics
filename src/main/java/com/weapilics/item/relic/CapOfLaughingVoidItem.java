@@ -1,18 +1,19 @@
 package com.weapilics.item.relic;
 
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.Item.Settings;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ArmorMaterials;
+// ArmorMaterials removed — use RelicArmorItem constructor with EquipmentSlot
 import net.minecraft.server.world.ServerWorld;
 
 public class CapOfLaughingVoidItem extends RelicArmorItem {
     public static final int INVISIBILITY_DURATION = 5; // Duration in ticks
 
     public CapOfLaughingVoidItem(Settings settings) {
-        super(ArmorMaterials.LEATHER, EquipmentSlot.HEAD, settings);
+        super(EquipmentSlot.HEAD, settings);
     }
 
     @Override
